@@ -1,7 +1,8 @@
 # Pseudo Make Me Key Cap Profile
 
 Now with Icons!
-![r3-butterfly](https://raw.githubusercontent.com/pseudoku/PseudoMakeMeKeyCapProfiles/master/Photo/r3-butterfly.png)
+
+![r3-butterfly](Photo/r3-butterfly.png){width=400}
 
 Made by [Johann Banta](https://yooohon.com), [Instagram](https://www.instagram.com/yooohon/?hl=de), [Linkedin](https://www.linkedin.com/in/johannbanta/)
 
