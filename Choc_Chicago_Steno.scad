@@ -7,6 +7,9 @@ use <sweep.scad>
 use <skin.scad> 
 //use <z-butt.scad> 
 
+icon = "";
+echo (icon);
+
 //Choc Chord version Chicago Stenographer
 
 /*Tester */
@@ -20,8 +23,11 @@ keycap(
   visualizeDish = false, // turn on debug visual of Dish 
   crossSection  = false, // center cut to check internal
   homeDot = false, //turn on homedots
-  Legends = false
+  Legends = false,
+  icon = icon
   ); 
+  
+
 
 //-Parameters
 wallthickness = 1.1; // 1.75 for mx size, 1.1
@@ -251,7 +257,7 @@ function StemRadius(t, keyID) = pow(t/stemLayers,3)*3 + (1-pow(t/stemLayers, 3))
 
 
 ///----- KEY Builder Module
-module keycap(keyID = 0, cutLen = 0, visualizeDish = false, crossSection = false, Dish = true, Stem = false, StemRot = 0, homeDot = false, Stab = 0, Legends = false) {
+module keycap(keyID = 0, cutLen = 0, visualizeDish = false, crossSection = false, Dish = true, Stem = false, StemRot = 0, homeDot = false, Stab = 0, Legends = false, icon=false) {
   
   //Set Parameters for dish shape
   FrontPath = quantize_trajectories(FrontTrajectory(keyID), steps = stepsize, loop=false);
@@ -295,7 +301,7 @@ module keycap(keyID = 0, cutLen = 0, visualizeDish = false, crossSection = false
     if(Legends ==  true){
       #rotate([-XAngleSkew(keyID),YAngleSkew(keyID),ZAngleSkew(keyID)])translate([-1,-5,KeyHeight(keyID)-2.5])linear_extrude(height = 1)text( text = "ver2", font = "Constantia:style=Bold", size = 3, valign = "center", halign = "center" );
       }
-   //Dish Shape 
+    //Dish Shape 
     if(Dish == true){
      if(visualizeDish == false){
       translate([-TopWidShift(keyID),.0001-TopLenShift(keyID),KeyHeight(keyID)-DishHeightDif(keyID)])rotate([0,-YAngleSkew(keyID),0])rotate([0,-90+XAngleSkew(keyID),90-ZAngleSkew(keyID)])skin(FrontCurve);
@@ -304,17 +310,31 @@ module keycap(keyID = 0, cutLen = 0, visualizeDish = false, crossSection = false
       #translate([-TopWidShift(keyID),.0001-TopLenShift(keyID),KeyHeight(keyID)-DishHeightDif(keyID)]) rotate([0,-YAngleSkew(keyID),0])rotate([0,-90+XAngleSkew(keyID),90-ZAngleSkew(keyID)])skin(FrontCurve);
       #translate([-TopWidShift(keyID),-TopLenShift(keyID),KeyHeight(keyID)-DishHeightDif(keyID)])rotate([0,-YAngleSkew(keyID),0])rotate([0,-90+XAngleSkew(keyID),90-ZAngleSkew(keyID)])skin(BackCurve);
      }
-   }
+    }
      if(crossSection == true) {
        translate([0,-25,-.1])cube([15,50,15]); 
      }
+    if (icon != false) {
+        logo(icon_file = str("SVG/", icon, ".svg"), height=3);
+    }
   }
   //Homing dot
   if(homeDot == true){
     translate([2,-4.5,KeyHeight(keyID)-DishHeightDif(keyID)+.15])sphere(d = 1);
     translate([-2,-4.5,KeyHeight(keyID)-DishHeightDif(keyID)+.15])sphere(d = 1);
   }
+
 }
+//------------------Logos
+module logo(icon_file, height) {
+    //surface(icon_file, center=true);
+    translate([0, 0, 2.5])
+    linear_extrude(height=height) {
+        scale(1.5)
+        import(icon_file, center=true);
+    }
+}
+
 
 //------------------stems 
 $fn = fn;
