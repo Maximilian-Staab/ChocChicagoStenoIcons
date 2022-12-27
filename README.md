@@ -2,7 +2,7 @@
 
 Now with Icons!
 
-![r3-butterfly](Photo/r3-butterfly.png){width=400}
+<img src="Photo/r3-butterfly.png" width="400">
 
 Made by [Johann Banta](https://yooohon.com), [Instagram](https://www.instagram.com/yooohon/?hl=de), [Linkedin](https://www.linkedin.com/in/johannbanta/)
 
