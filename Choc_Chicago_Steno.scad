@@ -8,6 +8,9 @@ use <skin.scad>
 //use <z-butt.scad> 
 
 icon = "";
+icon_scale = 0.08;
+use_svg = false;
+
 echo (icon);
 
 //Choc Chord version Chicago Stenographer
@@ -23,8 +26,10 @@ keycap(
   visualizeDish = false, // turn on debug visual of Dish 
   crossSection  = false, // center cut to check internal
   homeDot = false, //turn on homedots
-  Legends = false,
-  icon = icon
+  Legends = false,  // old code for text based legends
+  icon = icon,      // Filename for icon/ledgend
+  icon_scale = icon_scale, // Scale the icon images
+  use_svg = use_svg // There are different ways to handle SVGs and PNGs, use this to differentiate
   ); 
   
 
@@ -257,7 +262,7 @@ function StemRadius(t, keyID) = pow(t/stemLayers,3)*3 + (1-pow(t/stemLayers, 3))
 
 
 ///----- KEY Builder Module
-module keycap(keyID = 0, cutLen = 0, visualizeDish = false, crossSection = false, Dish = true, Stem = false, StemRot = 0, homeDot = false, Stab = 0, Legends = false, icon=false) {
+module keycap(keyID = 0, cutLen = 0, visualizeDish = false, crossSection = false, Dish = true, Stem = false, StemRot = 0, homeDot = false, Stab = 0, Legends = false, icon=false, icon_scale, use_svg=false) {
   
   //Set Parameters for dish shape
   FrontPath = quantize_trajectories(FrontTrajectory(keyID), steps = stepsize, loop=false);
@@ -298,9 +303,11 @@ module keycap(keyID = 0, cutLen = 0, visualizeDish = false, crossSection = false
       translate([sign(cutLen)*(BottomLength(keyID)+CapRound0i(keyID)+abs(cutLen))/2,0,0])
         cube([BottomWidth(keyID)+CapRound1i(keyID)+1,BottomLength(keyID)+CapRound0i(keyID),50], center = true);
     }
-    if(Legends ==  true){
-      #rotate([-XAngleSkew(keyID),YAngleSkew(keyID),ZAngleSkew(keyID)])translate([-1,-5,KeyHeight(keyID)-2.5])linear_extrude(height = 1)text( text = "ver2", font = "Constantia:style=Bold", size = 3, valign = "center", halign = "center" );
-      }
+    if(Legends ==  true){ 
+        # rotate([-XAngleSkew(keyID),YAngleSkew(keyID),ZAngleSkew(keyID)])translate([-1,-5,KeyHeight(keyID)-2.5]) 
+        linear_extrude(height = 1) 
+        text( text = "ver2", font = "Constantia:style=Bold", size = 3, valign = "center", halign = "center" );
+    }
     //Dish Shape 
     if(Dish == true){
      if(visualizeDish == false){
@@ -314,10 +321,31 @@ module keycap(keyID = 0, cutLen = 0, visualizeDish = false, crossSection = false
      if(crossSection == true) {
        translate([0,-25,-.1])cube([15,50,15]); 
      }
-    if (icon != false) {
-        logo(icon_file = str("SVG/", icon, ".svg"), height=3);
+     
     }
-  }
+    // Image Based Legends
+    if (icon != false) {
+        icon_file = use_svg == true ? str("SVG/", icon, ".svg") : str("PNG/", icon, ".png");
+        //translate([0, 0, 4])
+        //scale([icon_scale, icon_scale, 4/256])
+        //    surface(icon_file, center=true, invert=true);
+        //logo(icon_file = icon_file, use_svg, height = 3, icon_scale = icon_scale);
+        
+        
+        if (svg == true) {
+            translate([0, 0, 2.5])
+            linear_extrude(height=3) {
+                scale(icon_scale)
+                    import(icon_file, center=true);
+            }
+        } else {
+        translate([0, 0, 4])
+         scale([icon_scale, icon_scale, 3/256])
+          surface(icon_file, center=true, invert=true);
+        }
+    }
+
+  
   //Homing dot
   if(homeDot == true){
     translate([2,-4.5,KeyHeight(keyID)-DishHeightDif(keyID)+.15])sphere(d = 1);
@@ -325,14 +353,21 @@ module keycap(keyID = 0, cutLen = 0, visualizeDish = false, crossSection = false
   }
 
 }
+
 //------------------Logos
-module logo(icon_file, height) {
-    //surface(icon_file, center=true);
-    translate([0, 0, 2.5])
-    linear_extrude(height=height) {
-        scale(1.5)
-        import(icon_file, center=true);
-    }
+
+module logo(icon_file, svg, height, icon_scale) {
+    svg == true ? 
+        translate([0, 0, 2.5])
+        linear_extrude(height=height) {
+            scale(icon_scale)
+                import(icon_file, center=true);
+        }
+    :
+        translate([0, 0, 4])
+         scale([icon_scale, icon_scale, height/256])
+          surface(icon_file, center=true, invert=true);
+    
 }
 
 
